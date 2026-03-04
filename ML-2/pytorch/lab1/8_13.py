@@ -9,6 +9,9 @@ import torch
 from torch import nn
 import random
 
+LOW = -30
+HIGH = 30
+
 class SimpleModel(nn.Module):
     def __init__(self, inp_size, hid_size, out_size):
         super(SimpleModel, self).__init__()
@@ -28,6 +31,11 @@ class MultNetwork:
         self.num_of_data = num_of_data
         self.low_limit = low_limit
         self.high_limit = high_limit
+        self.num_train_epoch = 2000
+        self.train_learning_rate = 0.01
+        self.model = SimpleModel(2, 128, 1)
+        self.optimizator = torch.optim.Adam(self.model.parameters(), lr=self.train_learning_rate) 
+        self.loss_func = nn.MSELoss()
 
     def generate_data_for_training(self):
         raw_inp = torch.randint(self.low_limit, self.high_limit, (self.num_of_data, 2), dtype=torch.float32)
@@ -43,15 +51,7 @@ class MultNetwork:
 
         return inp_data, out_data
 
-    def config_for_training(self):
-        self.num_train_epoch = 2000
-        self.train_learning_rate = 0.01
-        self.model = SimpleModel(2, 128, 1)
-        self.optimizator = torch.optim.Adam(self.model.parameters(), lr=self.train_learning_rate) 
-        self.loss_func = nn.MSELoss()
-
     def training(self, DEBUG=False):
-        self.config_for_training()
         self.train_inp_data, self.train_out_data = self.generate_data_for_training()
 
         for epoch in range(self.num_train_epoch):
@@ -70,21 +70,58 @@ class MultNetwork:
         normalized_pred = self.model(test_input_std).item()
         return normalized_pred * self.out_std + self.out_mean
 
-
-def run(num_of_data):
+def test_network(network):
+    print("-" * 100)
     DATA = ((3, 4), (3, 3), (2, 3), (9, 2), (0, 1), (5, 6), (0, 0), (14, 2), (20, 10), (30, 0))
-    LOW = -30
-    HIGH = 30
-    network = MultNetwork(num_of_data, LOW, HIGH)
-    network.training()
     for d in DATA:
         print("Данные - ", d, "\n\tОжидается - ", d[0] * d[1], "\n\tПолучен - ", network.get_prediction(d[0], d[1]))
         print("Данные - ", (-d[0], d[1]), "\n\tОжидается - ", -d[0] * d[1], "\n\tПолучен - ", network.get_prediction(-d[0], d[1]))
+    print("-" * 100)
 
-def save(network):
-    pass
+def save_model(network, filename):
+    torch.save({
+        'model_state_dict': network.model.state_dict(),
+        'inp_mean': network.inp_mean,
+        'inp_std': network.inp_std,
+        'out_mean': network.out_mean,
+        'out_std': network.out_std
+    }, filename)
 
+def task_8_11():
+    network100 = MultNetwork(100, LOW, HIGH)
+    network100.training()
+    test_network(network100)
+    save_model(network100, "network100.pth")
 
-run(100)
-run(10)
-run(1000)
+    network10 = MultNetwork(10, LOW, HIGH)
+    network10.training()
+    test_network(network10)
+    save_model(network10, "network10.pth")
+
+    network1000 = MultNetwork(1000, LOW, HIGH)
+    network1000.training()
+    test_network(network1000)
+    save_model(network1000, "network1000.pth")
+
+def load_model(filename):
+    struct = torch.load(filename)
+    network = MultNetwork(10, LOW, HIGH)
+
+    network.model.load_state_dict(struct['model_state_dict'])
+    network.inp_mean = struct['inp_mean']
+    network.inp_std = struct['inp_std']
+    network.out_mean = struct['out_mean']
+    network.out_std = struct['out_std']
+    
+    return network
+
+def task_12_13():
+    network100 = load_model("network100.pth")
+    test_network(network100)
+    network10 = load_model("network10.pth")
+    test_network(network10)
+    network1000 = load_model("network1000.pth")
+    test_network(network1000)
+
+task_8_11()
+task_12_13()
