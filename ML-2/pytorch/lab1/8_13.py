@@ -16,15 +16,14 @@ class SimpleModel(nn.Module):
     def __init__(self, inp_size, hid_size, out_size):
         super(SimpleModel, self).__init__()
         self.fc1 = nn.Linear(inp_size, hid_size)
-        self.relu = nn.ReLU()
         self.tanh = nn.Tanh()
         self.fc2 = nn.Linear(hid_size, out_size)
 
     def forward(self, x):
-        out = self.fc1(x)
-        out = self.tanh(out)
-        out = self.fc2(out)
-        return out
+        tmp = self.fc1(x)
+        tmp = self.tanh(tmp)
+        tmp = self.fc2(tmp)
+        return tmp
 
 class MultNetwork:
     def __init__(self, num_of_data, low_limit, high_limit):
