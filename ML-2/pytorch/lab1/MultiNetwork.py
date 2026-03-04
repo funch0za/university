@@ -34,9 +34,9 @@ class MultNetwork:
         raw_out = (raw_inp[:, 0] * raw_inp[:, 1]).unsqueeze(1)
 
         self.inp_mean = raw_inp.mean(dim=0, keepdim=True)
-        self.inp_std = raw_inp.std(dim=0, keepdim=True) + 1e-8
+        self.inp_std = raw_inp.std(dim=0, keepdim=True)
         self.out_mean = raw_out.mean()
-        self.out_std = raw_out.std() + 1e-8
+        self.out_std = raw_out.std()
 
         inp_data = (raw_inp - self.inp_mean) / self.inp_std
         out_data = (raw_out - self.out_mean) / self.out_std
@@ -70,29 +70,21 @@ class MultNetwork:
         normalized_pred = self.model(test_input_std).item()
         return normalized_pred * self.out_std + self.out_mean
 
-DATA = ((3, 4), (3, 3), (2, 3), (9, 2), (0, 1), (5, 6), (0, 0), (14, 2), (20, 10), (30, 0))
 
-print("100 данных:")
-network100 = MultNetwork(100, -30, 30)
-network100.training()
-for d in DATA:
-    print("Данные - ", d, "\n\tОжидается - ", d[0] * d[1], "\n\tПолучен - ", network100.get_prediction(d[0], d[1]))
-    print("Данные - ", (-d[0], d[1]), "\n\tОжидается - ", -d[0] * d[1], "\n\tПолучен - ", network100.get_prediction(-d[0], d[1]))
+def run(num_of_data):
+    DATA = ((3, 4), (3, 3), (2, 3), (9, 2), (0, 1), (5, 6), (0, 0), (14, 2), (20, 10), (30, 0))
+    LOW = -30
+    HIGH = 30
+    network = MultNetwork(num_of_data, LOW, HIGH)
+    network.training()
+    for d in DATA:
+        print("Данные - ", d, "\n\tОжидается - ", d[0] * d[1], "\n\tПолучен - ", network.get_prediction(d[0], d[1]))
+        print("Данные - ", (-d[0], d[1]), "\n\tОжидается - ", -d[0] * d[1], "\n\tПолучен - ", network.get_prediction(-d[0], d[1]))
 
-
-print("10 данных:")
-network10 = MultNetwork(10, -30, 30)
-network10.training()
-for d in DATA:
-    print("Данные - ", d, "\n\tОжидается - ", d[0] * d[1], "\n\tПолучен - ", network10.get_prediction(d[0], d[1]))
-    print("Данные - ", (-d[0], d[1]), "\n\tОжидается - ", -d[0] * d[1], "\n\tПолучен - ", network10.get_prediction(-d[0], d[1]))
+def save(network):
+    pass
 
 
-print("1000 данных:")
-network1000 = MultNetwork(100, -30, 30)
-network1000.training()
-for d in DATA:
-    print("Данные - ", d, "\n\tОжидается - ", d[0] * d[1], "\n\tПолучен - ", network1000.get_prediction(d[0], d[1]))
-    print("Данные - ", (-d[0], d[1]), "\n\tОжидается - ", -d[0] * d[1], "\n\tПолучен - ", network1000.get_prediction(-d[0], d[1]))
-
-
+run(100)
+run(10)
+run(1000)
