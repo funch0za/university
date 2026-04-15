@@ -1,0 +1,9 @@
+Эпоха 1 - Сохранена лучшая модель (loss: 0.6102)                                                                                     
+Эпоха 1: Train Accuracy = 0.6334, Test Accuracy = 0.6759                                                                             
+Эпоха 2: Train Accuracy = 0.6673, Test Accuracy = 0.6651                                                                             
+Эпоха 3 - Сохранена лучшая модель (loss: 0.4529)                                                                                     
+Эпоха 3: Train Accuracy = 0.7152, Test Accuracy = 0.7974                                                                             
+Эпоха 4 - Сохранена лучшая модель (loss: 0.4270)                                                                                     
+Эпоха 4: Train Accuracy = 0.8361, Test Accuracy = 0.8086                                                                        
+Эпоха 5 - Сохранена лучшая модель (loss: 0.4021)
+Эпоха 5: Train Accuracy = 0.8848, Test Accuracy = 0.8219
