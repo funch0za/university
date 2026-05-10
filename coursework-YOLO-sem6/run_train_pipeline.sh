@@ -1,6 +1,3 @@
-#python3 -m venv venv
-#source ./venv/bin/active
-
 #!/bin/bash
 set -e
 
@@ -8,11 +5,25 @@ START_STAGE="${1:-1}"
 
 if [ "$START_STAGE" -eq 0 ]; then
     echo "---------------------- CLEAN ALL ----------------------"
-	rm -rf ./JSON2YOLO ./yolov5 ./test_annotation ./train_annotation ./trafic_signs.yaml
-	exit
+	rm -rf ./JSON2YOLO ./yolov5 
+    rm -rf ./test_annotation ./train_annotation 
+    rm -rf ./trafic_signs.yaml
+    rm -rf ./demo_data
+    rm -rf ./venv
+    exit
 fi
 
+VENV_DIR="./venv"
+
 if [ "$START_STAGE" -le 1 ]; then
+    echo "Activating virtual environment..."
+    if [ ! -f "$VENV_DIR/bin/activate" ]; then
+        echo "Creating Python virtual environment..."
+        python3 -m venv "$VENV_DIR"
+    fi    
+
+    source "$VENV_DIR/bin/activate"
+
     echo "---------------------- PART 1 ----------------------"
     echo "Install python packages..."
     pip3 install --upgrade pip
@@ -22,8 +33,8 @@ fi
 if [ "$START_STAGE" -le 2 ]; then
     echo "---------------------- PART 2 ----------------------"
     echo "Preparing dataset..."
-    #mkdir -p ./data
-    #unzip rtsd-dataset.zip ./data
+    mkdir -p ./data
+    tar -xzvf rts_dataset.tar.gz -C data
 fi
 
 if [ "$START_STAGE" -le 3 ]; then
@@ -58,37 +69,21 @@ if [ "$START_STAGE" -le 6 ]; then
 		--epochs 3 \
 		--data trafic_signs.yaml \
 		--weights yolov5s.pt \
-		--project hackaton_trafic_signs \
-		--name check_run \
+		--project coursework \
+		--name coursework_train \
 		--device mps \
 		--workers 2
-	exit
-    python yolov5/train.py \
-		--img 1280 \
-		--batch 8 \
-		--epochs 40 \
-		--data trafic_signs.yaml \
-		--weights yolov5m6.pt \
-		--project coursework_trafic_signs \
-		--name yolov5m6_results \
-		--device mps \
-		--workers 4 \
-		--cache ram \
-		--cos-lr
+    
+	#python yolov5/train.py \
+	#	--img 1280 \
+	#	--batch 8 \
+	#	--epochs 40 \
+	#	--data trafic_signs.yaml \
+	#	--weights yolov5m6.pt \
+	#	--project coursework_trafic_signs \
+	#	--name yolov5m6_results \
+	#	--device mps \
+	#	--workers 4 \
+	#	--cache ram \
+	#	--cos-lr
 fi
-
-# обучение
-# хз, тут мини фронтенд надо написать мб
-# типо режим проверки или полное обучение
-# python3 ./src/yolov5/train.py -blablabla
-
-# тестирование
-# python3 ./src/yolov5/detect.py -blablabla
-
-# возможность загрузить СВОЕ изображение
-# python3 ./src/yolov5/detect.py -blablabla
-
-
-# ???????????????????????????
-# echo "📄 Создание solution.csv..."                                                                                                   
-#python3 "$SRC_DIR/postprocess.py"      
