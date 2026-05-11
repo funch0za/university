@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
-DATA_DIR = os.path.join(PROJECT_DIR, 'data')
+DATA_DIR = os.path.join(PROJECT_DIR, 'data_small')
 
 for d in ['train_annotation/images', 'train_annotation/labels',
           'test_annotation/images', 'test_annotation/labels']:

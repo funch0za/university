@@ -26,8 +26,9 @@ names = [
     '6_8_1', '5_17', '1_10', '8_16', '7_18', '7_14', '8_23'
 ]
 
-yaml_content = f"""train: {cwd}/train_annotation/images
-val: {cwd}/test_annotation/images
+yaml_content = f"""path: {cwd}/data_small
+train: images/train
+val: images/val
 
 nc: 155
 names: {names}
@@ -35,3 +36,5 @@ names: {names}
 
 with open('trafic_signs.yaml', 'w') as f:
     f.write(yaml_content)
+
+print(f"Created trafic_signs.yaml with {len(names)} classes, using data_small")
