@@ -14,20 +14,33 @@ py_pkgs: py_venv
 	@echo "=== Installing python packages ==="
 	$(PIP) install -r requirements.txt
 
-install_yolov5: py_venv
-	@echo "=== Installing YOLOv5 ==="
-	@[ -d yolov5 ]    || git clone https://github.com/ultralytics/yolov5
-	$(PIP) install -r yolov5/requirements.txt 
+install_yolo: py_venv
+	@[ -d yolov5 ] || git clone https://github.com/ultralytics/yolov5
+	$(PIP) install -r yolov5/requirements.txt
 
-install_JSON2YOLO:
-	@echo "=== Installing JSON2YOLO ==="
-	@[ -d JSON2YOLO ] || git clone https://github.com/ultralytics/JSON2YOLO
+train: py_pkgs install_yolo
+	$(PYTHON) yolov5/train.py \
+		--img 640 \
+		--batch 8 \
+		--epochs 100 \
+		--patience 30 \
+		--data trafic_signs_and_objects.yaml \
+		--weights yolov5s.pt \
+		--project coursework_signs_objects \
+		--name signs_and_objects \
+		--device mps \
+		--workers 1 \
+		--hyp hyp.yaml \
 
-convert:
-	@echo "=== Converting COCO to YOLO ==="
-	@echo "Patching JSON2YOLO..."
-	$(PYTHON) ./src/patch_json2yolo.py
-	@echo "Converting..."
-	$(PYTHON) ./src/convert_coco_to_yolo.py
-
-full_pipeline: py_pkgs install_yolov5 install_JSON2YOLO
+test_train_1_epoch: py_pkgs install_yolo
+	$(PYTHON) yolov5/train.py \
+		--img 640 \
+		--batch 8 \
+		--epochs 1 \
+		--data trafic_signs_and_objects.yaml \
+		--weights yolov5s.pt \
+		--project coursework_signs_objects \
+		--name test_1epoch \
+		--device mps \
+		--workers 1 \
+		--hyp hyp.yaml \
